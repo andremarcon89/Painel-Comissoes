@@ -109,69 +109,59 @@ async def download_comissao(page, browser_context, nome_comissao, sigla):
 
         # Aguardar e clicar no botão de download CSV
         logger.info(f"Procurando botão de download CSV")
-        download_promise = browser_context.expect_download()
 
         try:
-            # Tentar múltiplos seletores comuns para botão de download
-            download_clicked = False
+            async with browser_context.expect_download(timeout=TIMEOUT_DOWNLOAD) as download_info:
+                download_clicked = False
 
-            # Opção 1: link com href CSV
-            try:
-                await page.click('a[href*=".csv"]')
-                download_clicked = True
-                logger.info(f"Download iniciado via link CSV")
-            except:
-                pass
-
-            # Opção 2: botão com texto "CSV" ou "Download"
-            if not download_clicked:
+                # Opção 1: link com href CSV
                 try:
-                    await page.click('button:has-text("CSV")')
+                    await page.click('a[href*=".csv"]')
                     download_clicked = True
-                    logger.info(f"Download iniciado via botão CSV")
+                    logger.info(f"Download iniciado via link CSV")
                 except:
                     pass
 
-            # Opção 3: botão com ícone de download
-            if not download_clicked:
-                try:
-                    await page.click('[class*="download"]')
-                    download_clicked = True
-                    logger.info(f"Download iniciado via classe download")
-                except:
-                    pass
+                # Opção 2: botão com texto "CSV" ou "Download"
+                if not download_clicked:
+                    try:
+                        await page.click('button:has-text("CSV")')
+                        download_clicked = True
+                        logger.info(f"Download iniciado via botão CSV")
+                    except:
+                        pass
 
-            # Opção 4: procurar por qualquer botão próximo à tabela
-            if not download_clicked:
-                try:
-                    await page.click('button >> nth=0')
-                    download_clicked = True
-                    logger.info(f"Download iniciado via primeiro botão")
-                except:
-                    pass
+                # Opção 3: botão com ícone de download
+                if not download_clicked:
+                    try:
+                        await page.click('[class*="download"]')
+                        download_clicked = True
+                        logger.info(f"Download iniciado via classe download")
+                    except:
+                        pass
 
-            if not download_clicked:
-                logger.error(f"Não foi possível localizar botão de download")
-                return False
+                # Opção 4: procurar por qualquer botão próximo à tabela
+                if not download_clicked:
+                    try:
+                        await page.click('button >> nth=0')
+                        download_clicked = True
+                        logger.info(f"Download iniciado via primeiro botão")
+                    except:
+                        pass
 
-        except Exception as e:
-            logger.error(f"Erro ao clicar em download: {e}")
-            return False
+                if not download_clicked:
+                    logger.error(f"Não foi possível localizar botão de download")
+                    return False
 
-        # Aguardar download com timeout
-        logger.info(f"Aguardando conclusão do download (timeout: {TIMEOUT_DOWNLOAD}ms)")
-        try:
-            download = await asyncio.wait_for(
-                download_promise,
-                timeout=TIMEOUT_DOWNLOAD / 1000
-            )
+            # Recuperar objeto de download após conclusão
+            logger.info(f"Aguardando conclusão do download (timeout: {TIMEOUT_DOWNLOAD}ms)")
+            download = await download_info.value
 
             # Salvar arquivo na pasta data/raw
             output_dir = Path('data/raw')
             output_dir.mkdir(parents=True, exist_ok=True)
             output_path = output_dir / f'{sigla}.csv'
 
-            # Copiar arquivo baixado para o destino
             await download.save_as(output_path)
             logger.info(f"Arquivo salvo com sucesso: {output_path}")
             return True
