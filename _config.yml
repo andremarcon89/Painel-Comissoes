@@ -1,0 +1,7 @@
+# GitHub Pages configuration
+theme: null
+markdown: null
+plugins: []
+
+# Set output directory
+destination: _site
