@@ -1,37 +1,24 @@
-# 🚀 Instruções de Uso - Dashboard Comissões
+# 🚀 Instruções de Uso - Dashboard Comissões (GitHub Pages)
 
-## 📦 Instalação
+## 🌐 Acesso Online
 
-1. **Instalar dependências:**
-```bash
-pip install -r requirements.txt
+Este é um **site estático** - acesse diretamente no GitHub Pages:
+
+```
+https://seu-usuario.github.io/Painel-Comissoes/dashboard/
 ```
 
-2. **Instalar navegador Playwright (necessário para download):**
-```bash
-playwright install chromium
-```
+## 💻 Usar Localmente
 
-## 🎯 Uso Rápido
+1. Clone o repositório
+2. Abra `dashboard/index.html` em seu navegador (ou use um servidor local)
 
-### Opção 1: Apenas Dashboard (com dados existentes)
+Para servidor local:
 ```bash
-cd comissoes-dashboard
-python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
-```
-Acesse em: `http://localhost:8000`
+# Python 3
+python -m http.server 8000
 
-### Opção 2: Pipeline Completo (download + processamento + consolidação)
-```bash
-cd comissoes-dashboard
-python scripts/run_pipeline.py
-```
-
-### Opção 3: Testar uma comissão específica
-```bash
-cd comissoes-dashboard
-python scripts/download_reports.py --comissao FIN
-python scripts/process_data.py data/raw/FIN.csv FIN
+# Depois acesse: http://localhost:8000/dashboard/
 ```
 
 ---

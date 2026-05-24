@@ -534,7 +534,7 @@
             if (!sigla) return;
 
             currentSigla = sigla;
-            const jsonUrl = `../data/processed/${sigla}.json`;
+            const jsonUrl = `./data/${sigla}.json`;
 
             document.getElementById('indicatorsContainer').innerHTML = '<div class="loading"><div class="spinner"></div>Carregando dados...</div>';
             document.getElementById('chartsContainer').innerHTML = '<div class="loading"><div class="spinner"></div>Carregando gráficos...</div>';
@@ -831,7 +831,7 @@
             let processadas = 0;
 
             COMISSOES.forEach(c => {
-                fetch(`../data/processed/${c.sigla}.json`)
+                fetch(`./data/${c.sigla}.json`)
                     .then(res => res.json())
                     .then(data => {
                         const ws = XLSX.utils.json_to_sheet(data.registros);
